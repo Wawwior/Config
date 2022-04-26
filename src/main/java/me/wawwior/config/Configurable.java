@@ -10,6 +10,10 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Enables classes extending this to save a Config in the format of T.
+ * @param <T> The Config used by this Configurable.
+ */
 public class Configurable<T extends IConfig> {
 
     protected T config;
@@ -26,6 +30,14 @@ public class Configurable<T extends IConfig> {
 
     private String pathName, fileName;
 
+    /**
+     * Constructor for an independent Configurable.
+     *
+     * @param configClass The class of T.
+     * @param path The directory where the config file is located in, having the {@link ConfigProvider provider's} path as root.
+     * @param file The name of the config file.
+     * @param provider The {@link ConfigProvider} used by this Configurable.
+     */
     public Configurable(Class<T> configClass, String path, String file, ConfigProvider provider) {
         try {
             config = configClass.getDeclaredConstructor().newInstance();
@@ -46,6 +58,14 @@ public class Configurable<T extends IConfig> {
         fileName = file;
     }
 
+    /**
+     * Constructor for a Configurable having another Configurable as parent and therefor depending on it.
+     * This means that instead of saving this Configurable's config in an individual file, it will be saved in the parents file.
+     *
+     * @param configClass The class of T.
+     * @param parent This Configurables parent.
+     * @param id ID used to identify this Configurable in the parent's config.
+     */
     public Configurable(Class<T> configClass, Configurable<? extends IConfig> parent, String id) {
         try {
             config = configClass.getDeclaredConstructor().newInstance();
@@ -76,6 +96,9 @@ public class Configurable<T extends IConfig> {
 
     }
 
+    /**
+     * Load this Configurable's config from the in the constructor defined location.
+     */
     public final void load() {
 
         if (child) {
@@ -121,6 +144,9 @@ public class Configurable<T extends IConfig> {
         return json;
     }
 
+    /**
+     * Save this Configurable's config at the in the constructor defined location.
+     */
     @SuppressWarnings({"ResultOfMethodCallIgnored"})
     public final void save() {
         if (child) {
