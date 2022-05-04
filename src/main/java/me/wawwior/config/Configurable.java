@@ -3,9 +3,8 @@ package me.wawwior.config;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
-import me.wawwior.config.io.ConfigurableInfo;
+import me.wawwior.config.io.AdapterInfo;
 
-import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -15,7 +14,7 @@ import java.util.Map;
  * Enables classes extending this to save a Config in the format of T.
  * @param <T> The Config used by this Configurable.
  */
-public class Configurable<T extends IConfig, S extends ConfigurableInfo> {
+public class Configurable<T extends IConfig, S extends AdapterInfo> {
 
     protected T config;
 

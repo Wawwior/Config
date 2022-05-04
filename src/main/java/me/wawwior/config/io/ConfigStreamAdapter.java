@@ -2,7 +2,7 @@ package me.wawwior.config.io;
 
 import com.google.gson.JsonElement;
 
-public interface ConfigStream<T extends ConfigurableInfo> {
+public interface ConfigStreamAdapter<T extends AdapterInfo> {
 
     JsonElement readJson(T info);
 

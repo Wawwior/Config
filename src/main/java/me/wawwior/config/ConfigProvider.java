@@ -1,14 +1,14 @@
 package me.wawwior.config;
 
-import me.wawwior.config.io.ConfigStream;
-import me.wawwior.config.io.ConfigurableInfo;
+import me.wawwior.config.io.ConfigStreamAdapter;
+import me.wawwior.config.io.AdapterInfo;
 
 /**
  * Used to categorize configs / config trees.
  */
-public class ConfigProvider<T extends ConfigurableInfo> {
+public class ConfigProvider<T extends AdapterInfo> {
 
-    public final ConfigStream<T> stream;
+    public final ConfigStreamAdapter<T> stream;
 
     public final boolean listenToChildren;
 
@@ -16,7 +16,7 @@ public class ConfigProvider<T extends ConfigurableInfo> {
      * @param stream
      * @param listenToChildren Whether children of configurables using this provider should be allowed to load/save the whole tree or not
      */
-    public ConfigProvider(ConfigStream<T> stream, boolean listenToChildren) {
+    public ConfigProvider(ConfigStreamAdapter<T> stream, boolean listenToChildren) {
         this.listenToChildren = listenToChildren;
         this.stream = stream;
     }

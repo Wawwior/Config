@@ -1,8 +1,8 @@
 package me.wawwior.config.io.impl;
 
-import me.wawwior.config.io.ConfigurableInfo;
+import me.wawwior.config.io.AdapterInfo;
 
-public class FileInfo implements ConfigurableInfo {
+public class FileInfo implements AdapterInfo {
 
     public final String path, file;
 
