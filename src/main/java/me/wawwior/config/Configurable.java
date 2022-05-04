@@ -3,6 +3,7 @@ package me.wawwior.config;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
+import me.wawwior.config.io.ConfigurableInfo;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -14,31 +15,30 @@ import java.util.Map;
  * Enables classes extending this to save a Config in the format of T.
  * @param <T> The Config used by this Configurable.
  */
-public class Configurable<T extends IConfig> {
+public class Configurable<T extends IConfig, S extends ConfigurableInfo> {
 
     protected T config;
 
     private final Class<T> configClass;
 
-    private final ConfigProvider provider;
+    private final ConfigProvider<S> provider;
 
-    private final Map<String, Configurable<? extends IConfig>> children = new HashMap<>();
+    private final Map<String, Configurable<? extends IConfig, S>> children = new HashMap<>();
 
     private boolean child = false;
 
-    private Configurable<? extends IConfig> parent;
+    private Configurable<? extends IConfig, S> parent;
 
-    private String pathName, fileName;
+    private S info;
 
     /**
      * Constructor for an independent Configurable.
      *
      * @param configClass The class of T.
-     * @param path The directory where the config file is located in, having the {@link ConfigProvider provider's} path as root.
-     * @param file The name of the config file.
+     * @param info
      * @param provider The {@link ConfigProvider} used by this Configurable.
      */
-    public Configurable(Class<T> configClass, String path, String file, ConfigProvider provider) {
+    public Configurable(Class<T> configClass, S info, ConfigProvider<S> provider) {
         try {
             config = configClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -48,14 +48,8 @@ public class Configurable<T extends IConfig> {
         this.configClass = configClass;
         this.provider = provider;
 
-        path = path.replace("./", "");
-        path = path.replace("../", "");
-        while (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        if (!path.endsWith("/")) path += "/";
-        pathName = path;
-        fileName = file;
+        this.info = info;
+
     }
 
     /**
@@ -66,7 +60,7 @@ public class Configurable<T extends IConfig> {
      * @param parent This Configurables parent.
      * @param id ID used to identify this Configurable in the parent's config.
      */
-    public Configurable(Class<T> configClass, Configurable<? extends IConfig> parent, String id) {
+    public Configurable(Class<T> configClass, Configurable<? extends IConfig, S> parent, String id) {
         try {
             config = configClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -109,27 +103,16 @@ public class Configurable<T extends IConfig> {
             return;
         }
 
-        try {
+        JsonElement element = provider.stream.readJson(info);
 
-            FileReader reader = new FileReader(provider.pathName + pathName + String.format("%s.json", fileName));
-
-            JsonElement element = JsonParser.parseReader(reader);
-
-            fromJson(element);
-
-            reader.close();
-
-        } catch (FileNotFoundException e) {
-            config = null;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (config == null) {
+        if (element == null) {
             try {
                 config = configClass.getDeclaredConstructor().newInstance();
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
+        } else {
+            fromJson(element);
         }
     }
 
@@ -147,7 +130,6 @@ public class Configurable<T extends IConfig> {
     /**
      * Save this Configurable's config at the in the constructor defined location.
      */
-    @SuppressWarnings({"ResultOfMethodCallIgnored"})
     public final void save() {
         if (child) {
             if (provider.listenToChildren)
@@ -157,28 +139,10 @@ public class Configurable<T extends IConfig> {
             return;
         }
 
-        File file = new File(provider.pathName + pathName + String.format("%s.json", fileName));
-
-        try {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            FileWriter writer = new FileWriter(file);
-
-            writer.write(gson.toJson(toJson()));
-
-            writer.close();
-
-        } catch (IOException e) {
-            new File(provider.pathName + pathName).mkdir();
-            try {
-                file.createNewFile();
-                save();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
+        provider.stream.writeJson(toJson(), info);
     }
 
-    private static Type type(Class<? extends IConfig> c) {
+    private static  Type type(Class<? extends IConfig> c) {
         return TypeToken.of(c).getType();
     }
 
