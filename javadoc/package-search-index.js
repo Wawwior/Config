@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"me.wawwior.config"},{"l":"me.wawwior.config.io"},{"l":"me.wawwior.config.io.impl"}];updateSearchResults();

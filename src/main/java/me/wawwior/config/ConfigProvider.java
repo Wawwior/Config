@@ -8,17 +8,17 @@ import me.wawwior.config.io.AdapterInfo;
  */
 public class ConfigProvider<T extends AdapterInfo> {
 
-    public final ConfigStreamAdapter<T> stream;
+    public final ConfigStreamAdapter<T> adapter;
 
-    public final boolean listenToChildren;
+    public final boolean strict;
 
     /**
-     * @param stream
-     * @param listenToChildren Whether children of configurables using this provider should be allowed to load/save the whole tree or not
+     * @param adapter Adapter used for saving the configurables.
+     * @param strict Whether children of configurables using this provider should be allowed to load/save the whole tree or not
      */
-    public ConfigProvider(ConfigStreamAdapter<T> stream, boolean listenToChildren) {
-        this.listenToChildren = listenToChildren;
-        this.stream = stream;
+    public ConfigProvider(ConfigStreamAdapter<T> adapter, boolean strict) {
+        this.strict = strict;
+        this.adapter = adapter;
     }
 
 }

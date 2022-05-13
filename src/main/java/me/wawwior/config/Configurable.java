@@ -4,40 +4,43 @@ package me.wawwior.config;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
 import me.wawwior.config.io.AdapterInfo;
+import me.wawwior.config.io.ConfigStreamAdapter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Enables classes extending this to save a Config in the format of T.
  * @param <T> The Config used by this Configurable.
+ * @param <U> The AdapterInfo required by the ConfigProvider
  */
-public class Configurable<T extends IConfig, S extends AdapterInfo> {
+public class Configurable<T extends IConfig, U extends AdapterInfo> {
 
     protected T config;
 
     private final Class<T> configClass;
 
-    private final ConfigProvider<S> provider;
+    private final ConfigProvider<U> provider;
 
-    private final Map<String, Configurable<? extends IConfig, S>> children = new HashMap<>();
+    private final Map<String, Configurable<? extends IConfig, U>> children = new HashMap<>();
 
     private boolean child = false;
 
-    private Configurable<? extends IConfig, S> parent;
+    private Configurable<? extends IConfig, U> parent;
 
-    private S info;
+    private U info;
 
     /**
      * Constructor for an independent Configurable.
      *
      * @param configClass The class of T.
-     * @param info
+     * @param info The {@link AdapterInfo} used by the provider's {@link ConfigStreamAdapter}
      * @param provider The {@link ConfigProvider} used by this Configurable.
      */
-    public Configurable(Class<T> configClass, S info, ConfigProvider<S> provider) {
+    public Configurable(Class<T> configClass, U info, ConfigProvider<U> provider) {
         try {
             config = configClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -59,7 +62,7 @@ public class Configurable<T extends IConfig, S extends AdapterInfo> {
      * @param parent This Configurables parent.
      * @param id ID used to identify this Configurable in the parent's config.
      */
-    public Configurable(Class<T> configClass, Configurable<? extends IConfig, S> parent, String id) {
+    public Configurable(Class<T> configClass, Configurable<? extends IConfig, U> parent, String id) {
         try {
             config = configClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -95,14 +98,14 @@ public class Configurable<T extends IConfig, S extends AdapterInfo> {
     public final void load() {
 
         if (child) {
-            if (provider.listenToChildren)
+            if (!provider.strict)
                 parent.load();
             else
-                System.out.println("Error -> Children of this ConfigProvider cannot call #load()");
+                Logger.getAnonymousLogger().warning("Cannot call #load() from strict provider!");
             return;
         }
 
-        JsonElement element = provider.stream.readJson(info);
+        JsonElement element = provider.adapter.readJson(info);
 
         if (element == null) {
             try {
@@ -130,15 +133,16 @@ public class Configurable<T extends IConfig, S extends AdapterInfo> {
      * Save this Configurable's config at the in the constructor defined location.
      */
     public final void save() {
+
         if (child) {
-            if (provider.listenToChildren)
+            if (!provider.strict)
                 parent.save();
             else
-                System.out.println("Error -> Children of this ConfigProvider cannot call #save()");
+                Logger.getAnonymousLogger().warning("Cannot call #save() from strict provider!");
             return;
         }
 
-        provider.stream.writeJson(toJson(), info);
+        provider.adapter.writeJson(toJson(), info);
     }
 
     private static  Type type(Class<? extends IConfig> c) {
