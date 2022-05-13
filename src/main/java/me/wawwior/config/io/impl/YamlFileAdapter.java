@@ -10,6 +10,9 @@ import org.yaml.snakeyaml.nodes.Tag;
 import java.io.*;
 import java.util.Map;
 
+/**
+ * Implementation of {@link ConfigStreamAdapter} for (de)serialization to a yaml file.
+ */
 public class YamlFileAdapter implements ConfigStreamAdapter<FileInfo> {
 
     private final String root;

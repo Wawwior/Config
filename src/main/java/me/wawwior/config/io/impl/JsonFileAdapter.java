@@ -8,6 +8,9 @@ import me.wawwior.config.io.ConfigStreamAdapter;
 
 import java.io.*;
 
+/**
+ * Implementation of {@link ConfigStreamAdapter} for (de)serialization to a json file.
+ */
 public class JsonFileAdapter implements ConfigStreamAdapter<FileInfo> {
 
     private final String root;
