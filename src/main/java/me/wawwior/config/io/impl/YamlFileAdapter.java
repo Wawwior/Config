@@ -3,6 +3,7 @@ package me.wawwior.config.io.impl;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import me.wawwior.config.io.ConfigStreamAdapter;
+import org.intellij.lang.annotations.Language;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.nodes.Tag;
@@ -11,11 +12,14 @@ import java.io.*;
 import java.util.Map;
 
 /**
- * Implementation of {@link ConfigStreamAdapter} for (de)serialization to a yaml file.
+ * Implementation of {@link ConfigStreamAdapter} for yaml (de)serialization.
  */
 public class YamlFileAdapter implements ConfigStreamAdapter<FileInfo> {
 
     private final String root;
+
+    @Language("RegExp")
+    private final String regex = "[/\\\\]{2,}|\\\\+|^/|^|(?<![/\\\\])$";
 
     public YamlFileAdapter(String root) {
         this.root = root;
@@ -27,7 +31,7 @@ public class YamlFileAdapter implements ConfigStreamAdapter<FileInfo> {
         try {
             Yaml yaml = new Yaml();
 
-            FileReader reader = new FileReader(root + info.path + String.format("%s.yml", info.file));
+            FileReader reader = new FileReader((root + "/" + info.path).replaceAll(regex, "/").substring(1) + String.format("%s.yml", info.file));
             Object loadedYaml = yaml.load(reader);
 
             reader.close();
@@ -47,7 +51,9 @@ public class YamlFileAdapter implements ConfigStreamAdapter<FileInfo> {
 
         Yaml yaml = new Yaml();
 
-        File file = new File(root + info.path + String.format("%s.yml", info.file));
+        String path = (root + "/" + info.path).replaceAll(regex, "/").substring(1);
+
+        File file = new File(path + String.format("%s.yml", info.file));
 
 
         try {
@@ -60,7 +66,7 @@ public class YamlFileAdapter implements ConfigStreamAdapter<FileInfo> {
             writer.close();
 
         } catch (IOException e) {
-            new File(root + info.path).mkdir();
+            new File(path).mkdirs();
             try {
                 file.createNewFile();
                 writeJson(json, info);

@@ -5,7 +5,9 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
 import me.wawwior.config.io.AdapterInfo;
 import me.wawwior.config.io.ConfigStreamAdapter;
+import sun.reflect.ReflectionFactory;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -41,8 +43,14 @@ public class Configurable<T extends IConfig, U extends AdapterInfo> {
      * @param provider The {@link ConfigProvider} used by this Configurable.
      */
     public Configurable(Class<T> configClass, U info, ConfigProvider<U> provider) {
+
         try {
-            config = configClass.getDeclaredConstructor().newInstance();
+
+            ReflectionFactory rf = ReflectionFactory.getReflectionFactory();
+
+            Constructor<?> constructor = rf.newConstructorForSerialization(configClass, ((Class<? super T>) Object.class).getDeclaredConstructor());
+
+            config = configClass.cast(constructor.newInstance());
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
         }

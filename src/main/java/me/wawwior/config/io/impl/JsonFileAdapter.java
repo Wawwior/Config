@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import me.wawwior.config.io.ConfigStreamAdapter;
+import org.intellij.lang.annotations.Language;
 
 import java.io.*;
 
@@ -15,6 +16,9 @@ public class JsonFileAdapter implements ConfigStreamAdapter<FileInfo> {
 
     private final String root;
 
+    @Language("RegExp")
+    private final String regex = "[/\\\\]{2,}|\\\\+|^/|^|(?<![/\\\\])$";
+
     public JsonFileAdapter(String root) {
         this.root = root;
     }
@@ -23,7 +27,7 @@ public class JsonFileAdapter implements ConfigStreamAdapter<FileInfo> {
     public JsonElement readJson(FileInfo info) {
         try {
 
-            FileReader reader = new FileReader(root + info.path + String.format("%s.json", info.file));
+            FileReader reader = new FileReader((root + "/" + info.path).replaceAll(regex, "/").substring(1) + String.format("%s.json", info.file));
 
             JsonElement element = JsonParser.parseReader(reader);
 
@@ -41,7 +45,9 @@ public class JsonFileAdapter implements ConfigStreamAdapter<FileInfo> {
     @Override
     public void writeJson(JsonElement json, FileInfo info) {
 
-        File file = new File(root + info.path + String.format("%s.json", info.file));
+        String path = (root + "/" + info.path).replaceAll(regex, "/").substring(1);
+
+        File file = new File(path + String.format("%s.json", info.file));
 
         try {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -52,7 +58,7 @@ public class JsonFileAdapter implements ConfigStreamAdapter<FileInfo> {
             writer.close();
 
         } catch (IOException e) {
-            new File(root + info.path).mkdir();
+            new File(path).mkdir();
             try {
                 file.createNewFile();
                 writeJson(json, info);
