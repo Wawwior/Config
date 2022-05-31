@@ -45,12 +45,7 @@ public class Configurable<T extends IConfig, U extends AdapterInfo> {
     public Configurable(Class<T> configClass, U info, ConfigProvider<U> provider) {
 
         try {
-
-            ReflectionFactory rf = ReflectionFactory.getReflectionFactory();
-
-            Constructor<?> constructor = rf.newConstructorForSerialization(configClass, ((Class<? super T>) Object.class).getDeclaredConstructor());
-
-            config = configClass.cast(constructor.newInstance());
+            config = configClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
         }

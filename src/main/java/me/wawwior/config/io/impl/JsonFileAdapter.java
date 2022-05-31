@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import me.wawwior.config.io.ConfigStreamAdapter;
-import org.intellij.lang.annotations.Language;
 
 import java.io.*;
 
@@ -15,8 +14,6 @@ import java.io.*;
 public class JsonFileAdapter implements ConfigStreamAdapter<FileInfo> {
 
     private final String root;
-    
-    private final String regex = "[/\\\\]{2,}|\\\\+|(?![/\\\\])^|(?<![/\\\\])$";
 
     public JsonFileAdapter(String root) {
         this.root = root;
@@ -26,7 +23,7 @@ public class JsonFileAdapter implements ConfigStreamAdapter<FileInfo> {
     public JsonElement readJson(FileInfo info) {
         try {
 
-            FileReader reader = new FileReader((root + "/" + info.path).replaceAll(regex, "/").substring(1) + String.format("%s.json", info.file));
+            FileReader reader = new FileReader(format(root + "/" + info.path).substring(1) + String.format("%s.json", info.file));
 
             JsonElement element = JsonParser.parseReader(reader);
 
@@ -44,7 +41,7 @@ public class JsonFileAdapter implements ConfigStreamAdapter<FileInfo> {
     @Override
     public void writeJson(JsonElement json, FileInfo info) {
 
-        String path = (root + "/" + info.path).replaceAll(regex, "/").substring(1);
+        String path = format(root + "/" + info.path).substring(1);
 
         File file = new File(path + String.format("%s.json", info.file));
 
@@ -65,5 +62,9 @@ public class JsonFileAdapter implements ConfigStreamAdapter<FileInfo> {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private String format(String s) {
+        return s.replaceAll("[/\\\\]{2,}|\\\\+|^(?![/\\\\]|\\.*[$/]|\\.*/)|(?<![/\\\\])$", "/").replaceAll("[^\\w/.]", "_");
     }
 }

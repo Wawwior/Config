@@ -18,9 +18,6 @@ public class YamlFileAdapter implements ConfigStreamAdapter<FileInfo> {
 
     private final String root;
 
-    @Language("RegExp")
-    private final String regex = "[/\\\\]{2,}|\\\\+|^/|^|(?<![/\\\\])$";
-
     public YamlFileAdapter(String root) {
         this.root = root;
     }
@@ -31,7 +28,7 @@ public class YamlFileAdapter implements ConfigStreamAdapter<FileInfo> {
         try {
             Yaml yaml = new Yaml();
 
-            FileReader reader = new FileReader((root + "/" + info.path).replaceAll(regex, "/").substring(1) + String.format("%s.yml", info.file));
+            FileReader reader = new FileReader(format(root + "/" + info.path).substring(1) + String.format("%s.yml", info.file));
             Object loadedYaml = yaml.load(reader);
 
             reader.close();
@@ -51,7 +48,7 @@ public class YamlFileAdapter implements ConfigStreamAdapter<FileInfo> {
 
         Yaml yaml = new Yaml();
 
-        String path = (root + "/" + info.path).replaceAll(regex, "/").substring(1);
+        String path = format(root + "/" + info.path).substring(1);
 
         File file = new File(path + String.format("%s.yml", info.file));
 
@@ -74,6 +71,9 @@ public class YamlFileAdapter implements ConfigStreamAdapter<FileInfo> {
                 ex.printStackTrace();
             }
         }
+    }
 
+    private String format(String s) {
+        return s.replaceAll("[/\\\\]{2,}|\\\\+|^(?![/\\\\]|\\.*[$/]|\\.*/)|(?<![/\\\\])$", "/").replaceAll("[^\\w/.]", "_");
     }
 }
