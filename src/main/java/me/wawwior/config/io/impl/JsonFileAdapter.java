@@ -15,9 +15,8 @@ import java.io.*;
 public class JsonFileAdapter implements ConfigStreamAdapter<FileInfo> {
 
     private final String root;
-
-    @Language("RegExp")
-    private final String regex = "[/\\\\]{2,}|\\\\+|^/|^|(?<![/\\\\])$";
+    
+    private final String regex = "[/\\\\]{2,}|\\\\+|(?![/\\\\])^|(?<![/\\\\])$";
 
     public JsonFileAdapter(String root) {
         this.root = root;
