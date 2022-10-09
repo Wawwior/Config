@@ -80,15 +80,21 @@ public class Configurable<T extends IConfig, U extends AdapterInfo> {
         parent.children.put(id, this);
     }
 
-    private void fromJson(JsonElement element) {
+    private void fromJson(JsonElement element, Map<Class<?>, Object> adapters) {
 
-        Gson gson = new Gson();
+        GsonBuilder builder = new GsonBuilder();
+
+        if (adapters != null) {
+            adapters.forEach(builder::registerTypeAdapter);
+        }
+
+        Gson gson = builder.create();
 
         config = gson.fromJson(element, type(configClass));
 
         children.forEach((i, c) -> {
             JsonElement e = ((JsonObject) element).get(i);
-            c.fromJson(e);
+            c.fromJson(e, adapters);
         });
 
     }
@@ -115,7 +121,7 @@ public class Configurable<T extends IConfig, U extends AdapterInfo> {
                 e.printStackTrace();
             }
         } else {
-            fromJson(element);
+            fromJson(element, provider.adapter.getAdapters());
         }
     }
 
