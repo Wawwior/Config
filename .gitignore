@@ -1,7 +1,7 @@
 # User-specific stuff
 .idea/
 
-./credentials.properties
+credentials.properties
 
 *.iml
 *.ipr
