@@ -5,9 +5,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
 import me.wawwior.config.io.AdapterInfo;
 import me.wawwior.config.io.ConfigStreamAdapter;
-import sun.reflect.ReflectionFactory;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -121,13 +119,19 @@ public class Configurable<T extends IConfig, U extends AdapterInfo> {
         }
     }
 
-    private JsonElement toJson() {
+    private JsonElement toJson(Map<Class<?>, Object> adapters) {
 
-        Gson gson = new Gson();
+        GsonBuilder builder = new GsonBuilder();
+
+        if (adapters != null) {
+            adapters.forEach(builder::registerTypeAdapter);
+        }
+
+        Gson gson = builder.create();
 
         JsonObject json = (JsonObject) gson.toJsonTree(config, type(configClass));
 
-        children.forEach((i, c) -> json.add(i, c.toJson()));
+        children.forEach((i, c) -> json.add(i, c.toJson(adapters)));
 
         return json;
     }
@@ -145,7 +149,7 @@ public class Configurable<T extends IConfig, U extends AdapterInfo> {
             return;
         }
 
-        provider.adapter.writeJson(toJson(), info);
+        provider.adapter.writeJson(toJson(provider.adapter.getAdapters()), info);
     }
 
     private static  Type type(Class<? extends IConfig> c) {

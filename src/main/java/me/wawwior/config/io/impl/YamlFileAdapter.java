@@ -3,7 +3,6 @@ package me.wawwior.config.io.impl;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import me.wawwior.config.io.ConfigStreamAdapter;
-import org.intellij.lang.annotations.Language;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.nodes.Tag;
