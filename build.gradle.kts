@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "me.wawwior"
-version = "1.3.6"
+version = "1.3.7"
 
 val credentials: Properties by lazy {
     Properties().apply {
