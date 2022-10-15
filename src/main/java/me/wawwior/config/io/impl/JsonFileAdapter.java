@@ -1,12 +1,11 @@
 package me.wawwior.config.io.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import me.wawwior.config.io.ConfigStreamAdapter;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implementation of {@link ConfigStreamAdapter} for (de)serialization to a json file.
@@ -14,8 +13,16 @@ import java.io.*;
 public class JsonFileAdapter implements ConfigStreamAdapter<FileInfo> {
 
     private final String root;
+
+    private final Map<Class<?>, Object> adapters = new HashMap<>();
+
     public JsonFileAdapter(String root) {
         this.root = root;
+    }
+
+    public <C, A extends JsonSerializer<C> & JsonDeserializer<C>> JsonFileAdapter withAdapter(Class<C> clazz, A adapter) {
+        adapters.put(clazz, adapter);
+        return this;
     }
 
     @Override
@@ -45,12 +52,6 @@ public class JsonFileAdapter implements ConfigStreamAdapter<FileInfo> {
         File file = new File(path + String.format("%s.json", info.file));
 
         try {
-
-            if (!file.exists()) {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
-            }
-
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
             FileWriter writer = new FileWriter(file);
@@ -60,11 +61,21 @@ public class JsonFileAdapter implements ConfigStreamAdapter<FileInfo> {
             writer.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            new File(path).mkdir();
+            try {
+                file.createNewFile();
+                writeJson(json, info);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
     private String format(String s) {
         return s.replaceAll("[/\\\\]{2,}|\\\\+|^(?![/\\\\]|\\.*[$/]|\\.*/)|(?<![/\\\\])$", "/").replaceAll("[^\\w/.]", "_");
+    }
+
+    public Map<Class<?>, Object> getAdapters() {
+        return adapters;
     }
 }

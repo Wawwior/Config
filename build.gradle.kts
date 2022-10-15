@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "me.wawwior"
-version = "1.3.7"
+version = "1.3.6"
 
 val credentials: Properties by lazy {
     Properties().apply {
@@ -33,7 +33,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 }
 
-tasks.test {
+tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
