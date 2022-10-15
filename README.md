@@ -18,14 +18,14 @@ Framework introducing config files bound to inner classes.
   <dependency>
     <groupId>me.wawwior</groupId>
     <artifactId>config</artifactId>
-    <version>1.3.6</version>
+    <version>1.3.8</version>
   </dependency>
 </dependencies>
 ```
 
 ### Gradle:
 
-```gradle
+```groovy
 repositories {
   maven {
     url "https://repo.wawwior.me/repository/maven-public/"
@@ -33,6 +33,6 @@ repositories {
 }
 
 dependencies {
-  implementation 'me.wawwior:config:1.3.6'
+  implementation 'me.wawwior:config:1.3.8'
 }
 ```

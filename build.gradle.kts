@@ -1,12 +1,11 @@
 import java.util.*
-
 plugins {
     `java-library`
     `maven-publish`
 }
 
 group = "me.wawwior"
-version = "1.3.6"
+version = "1.3.8"
 
 val credentials: Properties by lazy {
     Properties().apply {
@@ -33,7 +32,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 }
 
-tasks.getByName<Test>("test") {
+tasks.test {
     useJUnitPlatform()
 }
 

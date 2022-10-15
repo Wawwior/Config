@@ -115,5 +115,10 @@ buildNumber.properties
 run/
 
 # Project exclude paths
+<<<<<<< HEAD
+.gradle/
+build/
+=======
 /.gradle/
 /build/
+>>>>>>> 0e59c4f (Testing)
