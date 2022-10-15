@@ -4,13 +4,11 @@ import com.google.gson.*;
 import me.wawwior.config.ConfigProvider;
 import me.wawwior.config.Configurable;
 import me.wawwior.config.IConfig;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Type;
-import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JsonFileAdapterTest {
 
@@ -37,10 +35,9 @@ class JsonFileAdapterTest {
     void test() {
 
         ConfigProvider<FileInfo> provider = new ConfigProvider<>(
-                new JsonFileAdapter("test")
-                        .withAdapter(Identifier.class, new Identifier.Serializer()),
+                new JsonFileAdapter("test"),
                 true
-        );
+        ).withExtension(Identifier.class, new Identifier.Serializer());
 
         TestConfigurable configurable = new TestConfigurable(provider, "test");
 
@@ -68,8 +65,8 @@ class JsonFileAdapterTest {
     }
 
     public static class Identifier {
-        private String path;
-        private String name;
+        private final String path;
+        private final String name;
 
         public Identifier(String path, String name) {
             this.path = path;
