@@ -121,7 +121,7 @@ public class Configurable<T extends IConfig, U extends AdapterInfo> {
                 e.printStackTrace();
             }
         } else {
-            fromJson(element, provider.adapter.getAdapters());
+            fromJson(element, provider.getExtensions());
         }
     }
 
@@ -155,7 +155,7 @@ public class Configurable<T extends IConfig, U extends AdapterInfo> {
             return;
         }
 
-        provider.adapter.writeJson(toJson(provider.adapter.getAdapters()), info);
+        provider.adapter.writeJson(toJson(provider.getExtensions()), info);
     }
 
     private static  Type type(Class<? extends IConfig> c) {

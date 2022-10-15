@@ -33,7 +33,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 }
 
-tasks.getByName<Test>("test") {
+tasks.test {
     useJUnitPlatform()
 }
 
