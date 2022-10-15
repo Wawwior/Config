@@ -18,7 +18,11 @@ Framework introducing config files bound to inner classes.
   <dependency>
     <groupId>me.wawwior</groupId>
     <artifactId>config</artifactId>
+<<<<<<< HEAD
+    <version>1.3.7</version>
+=======
     <version>1.3.6</version>
+>>>>>>> 0e59c4f (Testing)
   </dependency>
 </dependencies>
 ```
@@ -33,6 +37,10 @@ repositories {
 }
 
 dependencies {
+<<<<<<< HEAD
+  implementation 'me.wawwior:config:1.3.7'
+=======
   implementation 'me.wawwior:config:1.3.6'
+>>>>>>> 0e59c4f (Testing)
 }
 ```
