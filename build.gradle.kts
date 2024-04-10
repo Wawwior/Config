@@ -7,14 +7,6 @@ plugins {
 group = "me.wawwior"
 version = "1.3.8"
 
-val credentials: Properties by lazy {
-    Properties().apply {
-        file("credentials.properties").inputStream().use {
-            load(it)
-        }
-    }
-}
-
 val mavenUser: String = credentials.getProperty("username")
 val mavenPassword: String = credentials.getProperty("password")
 
@@ -34,22 +26,4 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
-        }
-    }
-    repositories {
-        maven {
-            name = "maven"
-            url = uri("https://repo.wawwior.me/repository/maven-releases/")
-            credentials {
-                username = mavenUser
-                password = mavenPassword
-            }
-        }
-    }
 }
