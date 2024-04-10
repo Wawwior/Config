@@ -7,9 +7,6 @@ plugins {
 group = "me.wawwior"
 version = "1.3.8"
 
-val mavenUser: String = credentials.getProperty("username")
-val mavenPassword: String = credentials.getProperty("password")
-
 repositories {
     mavenCentral()
 }
